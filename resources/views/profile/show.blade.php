@@ -36,10 +36,10 @@
                 <div class="absolute bottom-0 left-0 w-24 h-24 bg-white bg-opacity-10 rounded-full translate-y-12 -translate-x-12"></div>
                 
                 <div class="relative z-10">
-                    <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-4">
-                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-                        </svg>
+                    <div class="w-32 h-32 rounded-full mb-6 border-4 border-white border-opacity-40 overflow-hidden shadow-lg">
+                        <img src="{{ $user->getProfilePhotoUrl() }}" 
+                             alt="{{ $user->name }}" 
+                             class="w-full h-full object-cover">
                     </div>
                     <h2 class="text-2xl font-bold mb-2">{{ $user->name }}</h2>
                     <p class="text-white text-opacity-90 mb-4">{{ $user->email }}</p>

@@ -26,6 +26,7 @@ class User extends Authenticatable
         'address',
         'identity_number',
         'is_verified',
+        'profile_photo',
     ];
 
     /**
@@ -82,5 +83,32 @@ class User extends Authenticatable
     public function isAdmin()
     {
         return $this->role === 'admin';
+    }
+
+    /**
+     * Get the profile photo URL or default avatar
+     */
+    public function getProfilePhotoUrl()
+    {
+        if ($this->profile_photo && file_exists(public_path('storage/' . $this->profile_photo))) {
+            return asset('storage/' . $this->profile_photo);
+        }
+        
+        // Return default avatar based on user's initials
+        $initials = strtoupper(substr($this->name, 0, 1));
+        return "https://ui-avatars.com/api/?name=" . urlencode($this->name) . "&color=7F9CF5&background=EBF4FF&size=200";
+    }
+
+    /**
+     * Get user initials for avatar
+     */
+    public function getInitials()
+    {
+        $words = explode(' ', $this->name);
+        $initials = '';
+        foreach ($words as $word) {
+            $initials .= strtoupper(substr($word, 0, 1));
+        }
+        return substr($initials, 0, 2);
     }
 }

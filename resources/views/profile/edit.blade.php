@@ -18,9 +18,35 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('profile.update') }}">
+        <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
             @csrf
             @method('PUT')
+
+            <!-- Profile Photo Section -->
+            <div class="mb-6 text-center">
+                <div class="mb-4">
+                    <img id="profile-photo-preview" 
+                         src="{{ $user->getProfilePhotoUrl() }}" 
+                         alt="Profile Photo" 
+                         class="w-32 h-32 rounded-full mx-auto object-cover border-4 border-gray-200">
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2 font-medium">Foto Profil</label>
+                    <input type="file" 
+                           id="profile_photo" 
+                           name="profile_photo" 
+                           accept="image/*"
+                           class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    <p class="text-xs text-gray-500 mt-1">Format: JPG, PNG, GIF. Maksimal 2MB.</p>
+                    @if($user->profile_photo)
+                        <button type="button" 
+                                id="delete-photo-btn"
+                                class="mt-2 text-red-600 hover:text-red-800 text-sm font-medium">
+                            Hapus Foto Profil
+                        </button>
+                    @endif
+                </div>
+            </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -66,4 +92,55 @@
         </form>
     </div>
 </div>
+
+<script>
+document.getElementById('profile_photo').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('profile-photo-preview').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Handle delete photo button
+const deletePhotoBtn = document.getElementById('delete-photo-btn');
+if (deletePhotoBtn) {
+    deletePhotoBtn.addEventListener('click', function() {
+        if (confirm('Apakah Anda yakin ingin menghapus foto profil?')) {
+            fetch('{{ route("profile.photo.delete") }}', {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Reset preview to default avatar
+                    const userName = '{{ $user->name }}';
+                    const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&color=7F9CF5&background=EBF4FF&size=200`;
+                    document.getElementById('profile-photo-preview').src = defaultAvatar;
+                    
+                    // Hide delete button
+                    deletePhotoBtn.style.display = 'none';
+                    
+                    // Show success message
+                    alert('Foto profil berhasil dihapus');
+                } else {
+                    alert('Gagal menghapus foto profil');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat menghapus foto profil');
+            });
+        }
+    });
+}
+</script>
 @endsection

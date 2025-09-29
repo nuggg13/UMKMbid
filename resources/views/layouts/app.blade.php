@@ -71,7 +71,12 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     @auth
-                        <a href="{{ route('profile.show') }}" class="text-gray-700 hover:text-primary px-3 py-2 rounded-lg text-sm font-medium transition duration-200 hidden md:inline">{{ auth()->user()->name }}</a>
+                        <a href="{{ route('profile.show') }}" class="flex items-center space-x-2 text-gray-700 hover:text-primary px-3 py-2 rounded-lg text-sm font-medium transition duration-200">
+                            <img src="{{ auth()->user()->getProfilePhotoUrl() }}" 
+                                 alt="{{ auth()->user()->name }}" 
+                                 class="w-8 h-8 rounded-full object-cover border-2 border-gray-200">
+                            <span class="hidden md:inline">{{ auth()->user()->name }}</span>
+                        </a>
                         <button id="logout-btn" class="btn-primary text-sm transition duration-200">
                             Logout
                         </button>
